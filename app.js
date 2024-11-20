@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const weatherContainer = document.getElementById('weather');
+    const errorContainer = document.getElementById('error');
     let currentIndex = 0;
 
     function fetchWeatherData() {
@@ -16,12 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         const currentWeather = data.current_weather;
                         const hourlyWeather = data.hourly;
 
+                        if (!currentWeather || !hourlyWeather) {
+                            errorContainer.innerHTML = '<p>Failed to fetch complete weather data.</p>';
+                            return;
+                        }
+
                         weatherContainer.innerHTML = ''; // Clear previous content
                         const currentWeatherHtml = `
                             <h2>Current Weather in ${city}</h2>
                             <p> Time: ${currentWeather.time}</p>
-                            <p>Temperature: ${currentWeather.temperature_2m}°C</p>
-                            <p>Wind Speed: ${currentWeather.wind_speed_10m} m/s</p>
+                            <p>Temperature: ${currentWeather.temperature}°C</p>
+                            <p>Wind Speed: ${currentWeather.windspeed} m/s</p>
                         `;
 
                         weatherContainer.innerHTML = currentWeatherHtml;
@@ -42,12 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         setInterval(updateHourlyWeather, 5000); // Change slide every 5 seconds
                     })
                     .catch(error => {
-                        weatherContainer.innerHTML = '<p>Failed to fetch weather data.</p>';
+                        errorContainer.innerHTML = '<p>Failed to fetch weather data.</p>';
                         console.error('Error fetching weather data:', error);
                     });
             })
             .catch(error => {
-                weatherContainer.innerHTML = '<p>Failed to fetch location data.</p>';
+                errorContainer.innerHTML = '<p>Failed to fetch location data.</p>';
                 console.error('Error fetching location data:', error);
             });
     }
